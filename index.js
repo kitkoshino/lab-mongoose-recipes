@@ -12,16 +12,52 @@ mongoose
   .connect(MONGODB_URI, {
     useCreateIndex: true,
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
   })
-  .then(self => {
+  .then((self) => {
     console.log(`Connected to the database: "${self.connection.name}"`);
     // Before adding any documents to the database, let's delete all previous entries
     return self.connection.dropDatabase();
   })
   .then(() => {
     // Run your code here, after you have insured that the connection was made
+    return Recipe.create({
+      title: 'Strogonoff',
+      level: 'Easy Peasy',
+      ingredients: ['meat', 'cream', 'tomato sauce'],
+      cuisine: 'teste',
+      dishType: 'main_course',
+      image: 'https://images.media-allrecipes.com/images/75131.jpg',
+      duration: 30,
+      creator: 'Someone',
+      created: '05/12/2019',
+    });
   })
-  .catch(error => {
+  .then(() => {
+    return Recipe.insertMany(data);
+  })
+
+  .then((recipes) => {
+    recipes.forEach((recipe) => {
+      console.log(recipe.title);
+    });
+  })
+
+  .then(() => {
+    Recipe.findOneAndUpdate(
+      { title: 'Rigatoni alla Genovese' },
+      { duration: 101 }
+    );
+  })
+
+  .then(() => {
+    Recipe.deleteOne({ title: 'Carrot Cake' });
+  })
+
+  .then(() => {
+    return mongoose.disconnect();
+  })
+
+  .catch((error) => {
     console.error('Error connecting to the database', error);
   });
